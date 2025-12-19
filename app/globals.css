@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+:root {
+  /* Tatini brand colors */
+  --tatini-bg: #0b0b0b;
+  --tatini-gold: #c9a24d;
+  --tatini-gold-soft: #e6d9b8;
+  --tatini-text: #f5f5f5;
+  --tatini-muted: #9ca3af;
+
+  /* System */
+  --background: var(--tatini-bg);
+  --foreground: var(--tatini-text);
+}
+
+/* Optional dark-mode override (safe) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--tatini-bg);
+    --tatini-cream: #f6f7e8;
+    --foreground: var(--tatini-text);
+  }
+}
+
+@keyframes scrollHint {
+  0% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+}
+
+.scroll-cue {
+  animation: scrollHint 1.6s ease-in-out infinite;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeInUp 0.9s ease-out forwards;
+}
+
+@keyframes expandLine {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 4rem;
+    opacity: 1;
+  }
+}
+
+.divider-animate {
+  animation: expandLine 0.8s ease-out forwards;
+}
+
+@keyframes sectionReveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-reveal {
+  opacity: 0;
+  animation: sectionReveal 0.8s ease-out forwards;
+}
+
+/* Accessibility: respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .section-reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ===== Arch reveal animation ===== */
+@keyframes archReveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.arch-reveal {
+  animation: archReveal 1s ease-out forwards;
+}
+
+/* ===== Subtle grain texture ===== */
+.cream-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ===== Tatini glow text (signage style) ===== */
+.glow-tatini {
+  color: #f5f1e6; /* warm ivory */
+  text-shadow:
+    0 0 6px rgba(255, 214, 120, 0.45),
+    0 0 18px rgba(255, 200, 90, 0.35),
+    0 0 32px rgba(255, 180, 60, 0.25);
+}
+
+:root {
+  /* DARK THEME (default) */
+  --bg: #0b0b0b;
+  --text: #f5f5f5;
+  --muted: #9ca3af;
+
+  --tatini-gold: #c9a24d;
+  --tatini-cream: #f6f3ea;
+}
+
+/* LIGHT THEME */
+[data-theme="dark"] {
+  --bg: #ffffff;
+  --text: #171717;
+  --muted: #6b7280;
+
+  --tatini-gold: #b08a3c;
+  --tatini-cream: #ffffff;
+}
