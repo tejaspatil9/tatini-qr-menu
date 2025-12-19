@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 /* ================= PAGE ROOT ================= */
 
@@ -29,7 +30,6 @@ export default function Page() {
         color: "var(--text)",
       }}
     >
-
       {showSplash ? <SplashScreen /> : <LandingPage />}
     </main>
   );
@@ -42,7 +42,6 @@ function SplashScreen() {
     <section className="min-h-screen flex items-center justify-center px-6">
       <div className="text-center fade-in">
 
-        {/* Logo */}
         <div className="mb-10 flex justify-center">
           <Image
             src="/tatini-logo.png"
@@ -53,18 +52,13 @@ function SplashScreen() {
           />
         </div>
 
-        {/* Welcome */}
         <h1
           className="text-[22px] tracking-[0.35em] mb-4 uppercase"
-          style={{
-            fontFamily: "var(--font-playfair)",
-            color: "var(--text)",
-          }}
+          style={{ fontFamily: "var(--font-playfair)" }}
         >
           Welcome to
         </h1>
 
-        {/* Brand */}
         <h2
           className="text-[42px] font-medium tracking-[0.18em] mb-6 glow-tatini"
           style={{ fontFamily: "var(--font-playfair)" }}
@@ -72,13 +66,9 @@ function SplashScreen() {
           TATINI
         </h2>
 
-        {/* Subline */}
         <p
           className="text-[13px] tracking-[0.28em] uppercase"
-          style={{
-            fontFamily: "var(--font-inter)",
-            color: "var(--muted)",
-          }}
+          style={{ fontFamily: "var(--font-inter)", color: "var(--muted)" }}
         >
           Poolside Bar and Kitchen
         </p>
@@ -93,10 +83,9 @@ function SplashScreen() {
 function LandingPage() {
   return (
     <>
-      {/* ================= HERO (ARCH – NO FRAME) ================= */}
+      {/* ================= HERO ================= */}
       <section className="relative w-full px-4 pt-8">
 
-        {/* Floating logo */}
         <div className="absolute top-6 right-6 z-20">
           <img
             src="/tatini-logo.png"
@@ -146,6 +135,16 @@ function LandingPage() {
                   A contemporary dining experience where ambience,
                   flavours, and moments come together.
                 </p>
+
+                {/* ✅ VIEW MENU BUTTON */}
+                <div className="mt-6 flex justify-center">
+                  <Link
+                    href="/menu"
+                    className="px-8 py-3 rounded-full bg-white/95 text-black text-sm font-medium tracking-wide backdrop-blur hover:bg-white transition shadow-md"
+                  >
+                    View Menu →
+                  </Link>
+                </div>
 
               </div>
             </div>
