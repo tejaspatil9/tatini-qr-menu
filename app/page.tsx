@@ -35,44 +35,41 @@ export default function Page() {
   );
 }
 
-/* ================= SPLASH SCREEN ================= */
-
 function SplashScreen() {
   return (
-    <section className="min-h-screen flex items-center justify-center px-6">
-      <div className="text-center fade-in">
+    <section className="splash-root">
+      {/* Background image */}
+      <div className="splash-bg" />
 
-        <div className="mb-10 flex justify-center">
-          <Image
-            src="/tatini-logo.png"
-            alt="Tatini Logo"
-            width={180}
-            height={180}
-            className="opacity-95"
-          />
-        </div>
+      {/* Overlay */}
+      <div className="splash-overlay" />
 
-        <h1
-          className="text-[22px] tracking-[0.35em] mb-4 uppercase"
-          style={{ fontFamily: "var(--font-playfair)" }}
-        >
+      {/* Content */}
+      <div className="splash-content fade-in">
+        {/* Logo */}
+        <Image
+          src="/tatini-logo.png"
+          alt="Tatini Logo"
+          width={160}
+          height={160}
+          className="splash-logo"
+          priority
+        />
+
+        {/* Welcome */}
+        <h1 className="splash-welcome">
           Welcome to
         </h1>
 
-        <h2
-          className="text-[42px] font-medium tracking-[0.18em] mb-6 glow-tatini"
-          style={{ fontFamily: "var(--font-playfair)" }}
-        >
+        {/* Brand */}
+        <h2 className="splash-brand glow-water">
           TATINI
         </h2>
 
-        <p
-          className="text-[13px] tracking-[0.28em] uppercase"
-          style={{ fontFamily: "var(--font-inter)", color: "var(--muted)" }}
-        >
+        {/* Subline */}
+        <p className="splash-subline">
           Poolside Bar and Kitchen
         </p>
-
       </div>
     </section>
   );
