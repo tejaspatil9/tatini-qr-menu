@@ -8,23 +8,17 @@ import Link from "next/link";
 
 export default function Page() {
   const [showSplash, setShowSplash] = useState(true);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
     }, 2200);
-
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
-
   return (
     <main
-      className="min-h-screen transition-colors duration-300"
+      className="min-h-screen"
       style={{
         backgroundColor: "var(--bg)",
         color: "var(--text)",
@@ -35,39 +29,44 @@ export default function Page() {
   );
 }
 
+/* ================= SPLASH SCREEN ================= */
+
 function SplashScreen() {
   return (
-    <section className="splash-root">
-      {/* Background image */}
-      <div className="splash-bg" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: "url('/splash-water.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
 
-      {/* Overlay */}
-      <div className="splash-overlay" />
+      {/* Overlay for mobile sunlight readability */}
+      <div className="absolute inset-0 bg-black/45 backdrop-blur-[1px]" />
 
       {/* Content */}
-      <div className="splash-content fade-in">
-        {/* Logo */}
+      <div className="relative z-10 text-center px-6 fade-in">
         <Image
           src="/tatini-logo.png"
           alt="Tatini Logo"
           width={160}
           height={160}
-          className="splash-logo"
           priority
+          className="mx-auto mb-8"
         />
 
-        {/* Welcome */}
-        <h1 className="splash-welcome">
+        <h1 className="text-[14px] tracking-[0.35em] uppercase mb-3 text-gray-200">
           Welcome to
         </h1>
 
-        {/* Brand */}
-        <h2 className="splash-brand glow-water">
+        <h2 className="text-[42px] tracking-[0.22em] text-white glow-water">
           TATINI
         </h2>
 
-        {/* Subline */}
-        <p className="splash-subline">
+        <p className="mt-4 text-[13px] tracking-[0.25em] uppercase text-gray-300">
           Poolside Bar and Kitchen
         </p>
       </div>
@@ -82,17 +81,17 @@ function LandingPage() {
     <>
       {/* ================= HERO ================= */}
       <section className="relative w-full px-4 pt-8">
-
         <div className="absolute top-6 right-6 z-20">
-          <img
+          <Image
             src="/tatini-logo.png"
             alt="Tatini logo"
-            className="w-12 h-12 object-contain opacity-90"
+            width={44}
+            height={44}
+            className="opacity-90"
           />
         </div>
 
-        <div className="relative mx-auto max-w-md arch-reveal">
-
+        <div className="relative mx-auto max-w-md">
           <div
             className="relative h-[56vh] overflow-hidden shadow-[0_24px_70px_rgba(0,0,0,0.45)]"
             style={{
@@ -111,106 +110,115 @@ function LandingPage() {
               playsInline
             />
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/25 to-black/40"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/40" />
 
             <div className="relative z-10 h-full flex items-center justify-center px-6 text-center">
-              <div className="max-w-sm fade-in">
-
-                <h1
-                  className="text-[34px] font-medium tracking-[0.22em] mb-6 text-white"
-                  style={{ fontFamily: "var(--font-playfair)" }}
-                >
+              <div className="max-w-sm">
+                <h1 className="text-[34px] tracking-[0.22em] mb-6 text-white">
                   TATINI
                 </h1>
 
-                <div className="h-px w-14 bg-[var(--tatini-gold)] mx-auto mb-7 divider-animate"></div>
+                <div className="h-px w-14 bg-[var(--tatini-gold)] mx-auto mb-6" />
 
-                <p
-                  className="text-[14px] leading-[1.9] text-gray-200"
-                  style={{ fontFamily: "var(--font-inter)" }}
-                >
-                  A contemporary dining experience where ambience,
-                  flavours, and moments come together.
+                <p className="text-[14px] leading-[1.9] text-gray-200">
+                  A contemporary dining experience where ambience, flavours,
+                  and moments come together.
                 </p>
 
-                {/* ✅ VIEW MENU BUTTON */}
-                <div className="mt-6 flex justify-center">
+                <div className="mt-7 flex justify-center">
                   <Link
                     href="/menu"
-                    className="px-8 py-3 rounded-full bg-white/95 text-black text-sm font-medium tracking-wide backdrop-blur hover:bg-white transition shadow-md"
+                    className="px-8 py-3 rounded-full bg-white/95 text-black text-sm font-medium shadow-md"
                   >
                     View Menu →
                   </Link>
                 </div>
-
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ================= CONTENT ================= */}
+      {/* ================= TEXT SECTIONS ================= */}
       <section className="px-6 py-24">
-        <div className="max-w-md mx-auto space-y-24">
-
+        <div className="max-w-md mx-auto space-y-20 text-center">
           {[
             {
               title: "Cuisine",
-              img: "/images/cuisine.jpeg",
               text: "A thoughtfully curated menu celebrating authentic flavours.",
             },
             {
               title: "Ambience",
-              img: "/images/ambience.jpeg",
               text: "An elegant atmosphere designed for memorable evenings.",
             },
             {
               title: "Location",
-              img: "/images/location.jpeg",
               text: "Baner, Pune — a serene escape within the city.",
             },
-          ].map((item, i) => (
-            <div
-              key={item.title}
-              className="text-center section-reveal"
-              style={{ animationDelay: `${i * 0.15}s` }}
-            >
-              <div className="mb-7 overflow-hidden rounded-2xl">
-                <Image
-                  src={item.img}
-                  alt={item.title}
-                  width={600}
-                  height={400}
-                  className="w-full h-[220px] object-cover"
-                />
-              </div>
-
-              <h2
-                className="text-[20px] font-medium mb-4"
-                style={{ fontFamily: "var(--font-playfair)" }}
-              >
+          ].map((item) => (
+            <div key={item.title}>
+              <h2 className="text-[20px] mb-4">
                 {item.title}
               </h2>
 
-              <div className="w-10 h-px bg-[var(--tatini-gold)] mx-auto mb-5"></div>
+              <div className="w-10 h-px bg-[var(--tatini-gold)] mx-auto mb-5" />
 
-              <p
-                className="text-[14px] leading-[1.85]"
-                style={{ color: "var(--muted)" }}
-              >
+              <p className="text-[14px] leading-[1.9] text-[var(--muted)]">
                 {item.text}
               </p>
             </div>
           ))}
+        </div>
+      </section>
 
+      {/* ================= IMAGE GALLERY ================= */}
+      <section className="pb-24">
+        <div className="flex gap-4 overflow-x-auto px-6">
+          {[
+            "/gallery/food-1.jpeg",
+            "/gallery/ambience-1.jpeg",
+            "/gallery/food-2.jpeg",
+            "/gallery/pool-1.jpeg",
+          ].map((img) => (
+            <div
+              key={img}
+              className="relative w-[260px] h-[180px] flex-shrink-0 rounded-2xl overflow-hidden"
+            >
+              <Image
+                src={img}
+                alt="Tatini Gallery"
+                fill
+                className="object-cover"
+              />
+            </div>
+          ))}
         </div>
       </section>
 
       {/* ================= FOOTER ================= */}
-      <footer className="pb-12 text-center">
-        <p className="text-[11px] tracking-wide" style={{ color: "var(--muted)" }}>
+      <footer className="pb-12 text-center space-y-3">
+        <p className="text-[11px] tracking-wide text-[var(--muted)]">
           Crafted with care · Tatini
         </p>
+
+        {/* Table OS branding */}
+        <div className="flex items-center justify-center gap-2 text-[11px] text-gray-400">
+          <img
+            src="/tableos-icon.png"
+            alt="Table OS"
+            className="w-4 h-4 opacity-80"
+          />
+          <span>
+            Powered by <span className="font-medium">Table OS</span>
+          </span>
+        </div>
+
+        <a
+          href="mailto:tableoswork@gmail.com"
+          className="text-[11px] text-gray-400 underline"
+        >
+          tableoswork@gmail.com
+        </a>
       </footer>
     </>
   );

@@ -5,6 +5,12 @@ import Image from "next/image";
 
 /* ================= TYPES ================= */
 
+type Addon = {
+  id: string;
+  name: string;
+  price: number;
+};
+
 type CartItem = {
   id: string;
   name: string;
@@ -12,7 +18,14 @@ type CartItem = {
   price: number;
   qty: number;
   note?: string;
+  isVeg: boolean;
+  isAddon?: boolean;
 };
+
+/* ================= GOOGLE REVIEW ================= */
+
+const GOOGLE_REVIEW_URL =
+  "https://search.google.com/local/writereview?placeid=0x3bc2b9611badad51:0x360a8a00def068e6";
 
 /* ================= MAIN PAGE ================= */
 
@@ -63,9 +76,6 @@ function TableSelection({ onSelect }: { onSelect: (n: number) => void }) {
 
 const categories = ["Starters", "Main Course", "Drinks"];
 
-const GOOGLE_REVIEW_URL =
-  "https://search.google.com/local/writereview?placeid=0x3bc2b9611badad51:0x360a8a00def068e6";
-
 function Menu({ table }: { table: number }) {
   const [active, setActive] = useState("Starters");
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -76,6 +86,12 @@ function Menu({ table }: { table: number }) {
   const startersRef = useRef<HTMLDivElement | null>(null);
   const mainRef = useRef<HTMLDivElement | null>(null);
   const drinksRef = useRef<HTMLDivElement | null>(null);
+
+  /* ---------- HELPERS ---------- */
+
+  function getItem(id: string) {
+    return cart.find((c) => c.id === id);
+  }
 
   function scrollTo(cat: string) {
     setActive(cat);
@@ -119,10 +135,6 @@ function Menu({ table }: { table: number }) {
     );
   }
 
-  function getItem(id: string) {
-    return cart.find((c) => c.id === id);
-  }
-
   const totalItems = cart.reduce((s, i) => s + i.qty, 0);
   const totalAmount = cart.reduce((s, i) => s + i.qty * i.price, 0);
 
@@ -142,11 +154,15 @@ function Menu({ table }: { table: number }) {
     return encodeURIComponent(text);
   }
 
+  function canShowReview() {
+    return !sessionStorage.getItem("tatini_review_shown");
+  }
+
   return (
     <main className="min-h-screen bg-white text-black px-4 pb-36">
 
       {/* HEADER */}
-      <header className="sticky top-0 bg-white z-20 pt-5 pb-4 border-b flex justify-between items-center">
+      <header className="sticky top-0 bg-white z-20 pt-5 pb-4 border-b flex justify-between">
         <div>
           <h1 className="text-base font-medium">Tatini Menu</h1>
           <p className="text-xs text-gray-500">Table {table}</p>
@@ -155,9 +171,9 @@ function Menu({ table }: { table: number }) {
         <button
           onClick={() => {
             localStorage.removeItem("tatini_table");
-            window.location.reload();
+            location.reload();
           }}
-          className="text-xs underline text-gray-600"
+          className="text-xs underline"
         >
           Change
         </button>
@@ -169,10 +185,8 @@ function Menu({ table }: { table: number }) {
           <button
             key={cat}
             onClick={() => scrollTo(cat)}
-            className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-              active === cat
-                ? "bg-black text-white"
-                : "border border-gray-300"
+            className={`px-4 py-2 rounded-full text-sm ${
+              active === cat ? "bg-black text-white" : "border"
             }`}
           >
             {cat}
@@ -180,53 +194,98 @@ function Menu({ table }: { table: number }) {
         ))}
       </div>
 
-      {/* MENU CONTENT */}
+      {/* MENU SECTIONS */}
       <div className="space-y-20">
 
+        {/* STARTERS */}
         <div ref={startersRef}>
           <Category title="Starters">
-            <Dish id="cc" name="Crispy Corn" description="Golden fried corn tossed with mild spices and herbs." price={280} img="/menu/crispy-corn.jpg" cartItem={getItem("cc")} onAdd={addItem} onQty={updateQty} onNote={updateItemNote} />
-            <Dish id="pt" name="Paneer Tikka" description="Char-grilled cottage cheese marinated in aromatic spices." price={360} img="/menu/paneer-tikka.jpg" cartItem={getItem("pt")} onAdd={addItem} onQty={updateQty} onNote={updateItemNote} />
+            <Dish
+              id="cc"
+              name="Crispy Corn"
+              description="Golden fried corn tossed with mild spices."
+              price={280}
+              img="/menu/crispy-corn.jpg"
+              isVeg
+              cartItem={getItem("cc")}
+              onAdd={addItem}
+              onQty={updateQty}
+              onNote={updateItemNote}
+            />
+
+            <Dish
+              id="tc"
+              name="Tandoori Chicken"
+              description="Juicy chicken marinated overnight and grilled in a tandoor."
+              price={520}
+              img="/menu/Tandoori-Chicken.jpg"
+              isVeg={false}
+              addons={[
+                { id: "mint", name: "Mint Dip", price: 30 },
+                { id: "spice", name: "Extra Spice Rub", price: 20 },
+              ]}
+              cartItem={getItem("tc")}
+              onAdd={addItem}
+              onQty={updateQty}
+              onNote={updateItemNote}
+            />
           </Category>
         </div>
 
+        {/* MAIN COURSE */}
         <div ref={mainRef}>
           <Category title="Main Course">
-            <Dish id="bpm" name="Butter Paneer Masala" description="Rich tomato gravy finished with butter and cream." price={420} img="/menu/butter-paneer.jpg" cartItem={getItem("bpm")} onAdd={addItem} onQty={updateQty} onNote={updateItemNote} />
-            <Dish id="dm" name="Dal Makhani" description="Slow-cooked black lentils with butter and spices." price={340} img="/menu/dal-makhani.jpg" cartItem={getItem("dm")} onAdd={addItem} onQty={updateQty} onNote={updateItemNote} />
+            <Dish
+              id="bpm"
+              name="Butter Paneer Masala"
+              description="Creamy tomato gravy with butter and spices."
+              price={420}
+              img="/menu/butter-paneer.jpg"
+              isVeg
+              cartItem={getItem("bpm")}
+              onAdd={addItem}
+              onQty={updateQty}
+              onNote={updateItemNote}
+            />
           </Category>
         </div>
 
+        {/* DRINKS */}
         <div ref={drinksRef}>
           <Category title="Drinks">
-            <Dish id="vm" name="Virgin Mojito" description="Refreshing mint and lime cooler." price={220} img="/menu/mojito.jpg" cartItem={getItem("vm")} onAdd={addItem} onQty={updateQty} onNote={updateItemNote} />
-            <Dish id="cf" name="Cold Coffee" description="Chilled coffee blended with milk and ice." price={240} img="/menu/cold-coffee.jpg" cartItem={getItem("cf")} onAdd={addItem} onQty={updateQty} onNote={updateItemNote} />
+            <Dish
+              id="vm"
+              name="Virgin Mojito"
+              description="Refreshing mint and lime cooler."
+              price={220}
+              img="/menu/mojito.jpg"
+              isVeg
+              cartItem={getItem("vm")}
+              onAdd={addItem}
+              onQty={updateQty}
+              onNote={updateItemNote}
+            />
           </Category>
         </div>
 
       </div>
 
-      {/* FLOATING CART BAR */}
+      {/* FLOATING CART */}
       {totalItems > 0 && (
-        <div className="fixed bottom-4 left-4 right-4 z-40">
-          <div className="bg-black text-white rounded-xl px-5 py-4 flex justify-between items-center shadow-lg">
-            <span className="text-sm">
-              {totalItems} items · ₹{totalAmount}
-            </span>
-            <button
-              onClick={() => setShowCart(true)}
-              className="text-sm underline"
-            >
-              View Cart →
-            </button>
-          </div>
+        <div className="fixed bottom-4 left-4 right-4">
+          <button
+            onClick={() => setShowCart(true)}
+            className="w-full bg-black text-white py-4 rounded-xl"
+          >
+            {totalItems} items · ₹{totalAmount} — View Cart
+          </button>
         </div>
       )}
 
       {/* CART MODAL */}
       {showCart && (
-        <div className="fixed inset-0 bg-black/40 z-[999] flex items-end justify-center">
-          <div className="bg-white w-full max-w-md rounded-t-2xl p-5 max-h-[85vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/40 flex items-end z-[999]">
+          <div className="bg-white w-full rounded-t-2xl p-5 max-h-[85vh] overflow-y-auto">
 
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-base font-medium">Your Order</h2>
@@ -234,45 +293,48 @@ function Menu({ table }: { table: number }) {
             </div>
 
             {cart.map((item) => (
-              <div key={item.id} className="mb-5 border-b pb-4">
+              <div key={item.id} className="mb-4 border-b pb-3">
                 <div className="flex justify-between">
-                  <p className="text-sm">{item.name}</p>
-                  <p className="text-sm">₹{item.price * item.qty}</p>
+                  <p>{item.name}</p>
+                  <p>₹{item.price * item.qty}</p>
                 </div>
 
-                {item.note && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    Note: {item.note}
-                  </p>
-                )}
-
-                <div className="flex gap-4 items-center mt-2">
+                <div className="flex gap-3 mt-2">
                   <button onClick={() => updateQty(item.id, -1)}>−</button>
                   <span>{item.qty}</span>
                   <button onClick={() => updateQty(item.id, 1)}>+</button>
                 </div>
+
+                <textarea
+                  placeholder="Item note"
+                  value={item.note || ""}
+                  onChange={(e) => updateItemNote(item.id, e.target.value)}
+                  className="mt-2 w-full border p-2 text-xs rounded-md"
+                />
               </div>
             ))}
 
             <textarea
-              placeholder="Add note for the whole order (optional)"
+              placeholder="Order note (optional)"
               value={orderNote}
               onChange={(e) => setOrderNote(e.target.value)}
-              className="w-full border rounded-md p-3 text-sm"
+              className="w-full border p-2 text-sm rounded-md"
             />
 
-            <div className="mt-6 flex justify-between font-medium">
-              <span>Estimated Total</span>
-              <span>₹{totalAmount}</span>
+            <div className="mt-4 font-medium">
+              Total: ₹{totalAmount}
             </div>
 
-            <div className="mt-6 space-y-3">
+            <div className="mt-4 space-y-3">
               <button
                 onClick={() => {
                   setShowCart(false);
-                  setShowReviewPrompt(true);
+                  if (canShowReview()) {
+                    sessionStorage.setItem("tatini_review_shown", "true");
+                    setTimeout(() => setShowReviewPrompt(true), 400);
+                  }
                 }}
-                className="w-full bg-black text-white py-3 rounded-lg text-sm"
+                className="w-full bg-black text-white py-3 rounded-lg"
               >
                 Show Order to Waiter
               </button>
@@ -281,7 +343,7 @@ function Menu({ table }: { table: number }) {
                 href={`https://wa.me/917420096566?text=${generateOrderText()}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full text-center border border-black text-black py-3 rounded-lg text-sm"
+                className="block text-center border border-black py-3 rounded-lg"
               >
                 Send Order via WhatsApp
               </a>
@@ -290,43 +352,62 @@ function Menu({ table }: { table: number }) {
         </div>
       )}
 
-      {/* GOOGLE REVIEW PROMPT */}
+      {/* REVIEW PROMPT */}
       {showReviewPrompt && (
-        <div className="fixed inset-0 bg-black/40 z-[999] flex items-center justify-center px-6">
-          <div className="bg-white max-w-sm w-full rounded-2xl p-6 text-center">
-            <h3 className="text-base font-medium mb-2">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[999]">
+          <div className="bg-white p-6 rounded-xl text-center max-w-sm">
+            <h3 className="mb-2 font-medium">
               Thank you for dining with us ✨
             </h3>
 
-            <p className="text-sm text-gray-600 mb-6">
-              If you enjoyed your experience at Tatini,
-              we’d love to hear your feedback.
+            <p className="text-sm text-gray-600 mb-4">
+              Loved your experience at Tatini?
             </p>
 
             <a
               href={GOOGLE_REVIEW_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="block w-full bg-black text-white py-3 rounded-lg text-sm mb-3"
+              className="block bg-black text-white py-3 rounded-lg"
             >
               ⭐ Leave a Google Review
             </a>
 
             <button
               onClick={() => setShowReviewPrompt(false)}
-              className="text-sm text-gray-500 underline"
+              className="mt-3 text-xs underline text-gray-500"
             >
               Maybe later
             </button>
           </div>
         </div>
       )}
+{/* TABLE OS BRANDING */}
+<div className="mt-16 mb-4 text-center text-[11px] text-gray-400">
+  <div className="flex items-center justify-center gap-2">
+    <img
+      src="/tableos-icon.png"
+      alt="Table OS"
+      className="w-4 h-4 opacity-70"
+    />
+    <span>
+      Powered by <span className="font-medium">Table OS</span>
+    </span>
+  </div>
+
+  <a
+    href="mailto:tableoswork@gmail.com"
+    className="underline block mt-1"
+  >
+    tableoswork@gmail.com
+  </a>
+</div>
 
     </main>
   );
 }
 
-/* ================= UI COMPONENTS ================= */
+/* ================= COMPONENTS ================= */
 
 function Category({
   title,
@@ -338,7 +419,7 @@ function Category({
   return (
     <div>
       <h2 className="text-sm text-gray-600 mb-6">{title}</h2>
-      <div className="space-y-10">{children}</div>
+      <div className="space-y-8">{children}</div>
     </div>
   );
 }
@@ -349,6 +430,8 @@ function Dish({
   description,
   price,
   img,
+  isVeg,
+  addons = [],
   cartItem,
   onAdd,
   onQty,
@@ -359,6 +442,8 @@ function Dish({
   description: string;
   price: number;
   img: string;
+  isVeg: boolean;
+  addons?: Addon[];
   cartItem?: CartItem;
   onAdd: (item: Omit<CartItem, "qty">) => void;
   onQty: (id: string, delta: number) => void;
@@ -366,43 +451,69 @@ function Dish({
 }) {
   return (
     <div className="flex gap-4 border-b pb-4">
-      <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+      <div className="relative w-20 h-20 rounded overflow-hidden">
         <Image src={img} alt={name} fill className="object-cover" />
       </div>
 
       <div className="flex-1">
         <div className="flex justify-between">
-          <div className="pr-4">
-            <p className="text-sm font-medium">{name}</p>
-            <p className="text-xs text-gray-500 leading-relaxed">
-              {description}
-            </p>
+          <div>
+            <div className="flex items-center gap-2">
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  isVeg ? "bg-green-600" : "bg-red-600"
+                }`}
+              />
+              <p className="font-medium">{name}</p>
+            </div>
+            <p className="text-xs text-gray-500">{description}</p>
           </div>
-          <p className="text-sm whitespace-nowrap">₹{price}</p>
+          <p className="text-sm">₹{price}</p>
         </div>
 
         {!cartItem ? (
           <button
-            onClick={() => onAdd({ id, name, description, price })}
-            className="mt-2 px-4 py-1.5 text-xs border rounded-full"
+            onClick={() =>
+              onAdd({ id, name, description, price, isVeg })
+            }
+            className="mt-2 border px-4 py-1 rounded-full text-xs"
           >
             Add
           </button>
         ) : (
-          <div className="mt-2 flex items-center gap-3">
+          <div className="mt-2 flex gap-3 items-center">
             <button onClick={() => onQty(id, -1)}>−</button>
             <span>{cartItem.qty}</span>
             <button onClick={() => onQty(id, 1)}>+</button>
           </div>
         )}
 
-        {cartItem && (
-          <textarea
-            placeholder="Add note (e.g. less spicy)"
-            value={cartItem.note || ""}
-            onChange={(e) => onNote(id, e.target.value)}
-            className="mt-3 w-full text-xs border rounded-md p-2"
-          />
+        {cartItem && addons.length > 0 && (
+          <div className="mt-3 bg-gray-50 p-3 rounded-lg">
+            <p className="text-xs text-gray-500 mb-2">
+              Recommended with this
+            </p>
+
+            {addons.map((addon) => (
+              <button
+                key={addon.id}
+                onClick={() =>
+                  onAdd({
+                    id: `${id}-${addon.id}`,
+                    name: addon.name,
+                    description: `Add-on for ${name}`,
+                    price: addon.price,
+                    isVeg: true,
+                    isAddon: true,
+                  })
+                }
+                className="flex justify-between w-full text-xs border px-3 py-2 rounded-md mb-2"
+              >
+                <span>+ {addon.name}</span>
+                <span>₹{addon.price}</span>
+              </button>
+            ))}
+          </div>
         )}
       </div>
     </div>
