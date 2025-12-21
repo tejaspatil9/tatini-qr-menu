@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${playfair.variable} ${inter.variable} bg-[var(--tatini-bg)] text-[var(--tatini-text)]`}
+        className={`${playfair.variable} ${inter.variable} bg-(--tatini-bg) text-(--tatini-text)`}
       >
         {children}
       </body>

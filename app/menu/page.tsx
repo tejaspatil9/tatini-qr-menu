@@ -63,7 +63,6 @@ function TableSelection({ onSelect }: { onSelect: (n: number) => void }) {
 
 const categories = ["Starters", "Main Course", "Drinks"];
 
-// ✅ Google review link (official placeId-based)
 const GOOGLE_REVIEW_URL =
   "https://search.google.com/local/writereview?placeid=0x3bc2b9611badad51:0x360a8a00def068e6";
 
@@ -127,16 +126,12 @@ function Menu({ table }: { table: number }) {
   const totalItems = cart.reduce((s, i) => s + i.qty, 0);
   const totalAmount = cart.reduce((s, i) => s + i.qty * i.price, 0);
 
-  /* ---------- STEP 5: ORDER TEXT ---------- */
-
   function generateOrderText() {
     let text = `🪑 Table ${table}\n\n🧾 Order:\n`;
 
     cart.forEach((item) => {
       text += `• ${item.name} x${item.qty} — ₹${item.price * item.qty}\n`;
-      if (item.note) {
-        text += `  ↳ Note: ${item.note}\n`;
-      }
+      if (item.note) text += `  ↳ Note: ${item.note}\n`;
     });
 
     if (orderNote) {
@@ -144,7 +139,6 @@ function Menu({ table }: { table: number }) {
     }
 
     text += `\n💰 Estimated Total: ₹${totalAmount}`;
-
     return encodeURIComponent(text);
   }
 
@@ -152,9 +146,21 @@ function Menu({ table }: { table: number }) {
     <main className="min-h-screen bg-white text-black px-4 pb-36">
 
       {/* HEADER */}
-      <header className="sticky top-0 bg-white z-20 pt-5 pb-4 border-b">
-        <h1 className="text-base font-medium">Tatini Menu</h1>
-        <p className="text-xs text-gray-500">Table {table}</p>
+      <header className="sticky top-0 bg-white z-20 pt-5 pb-4 border-b flex justify-between items-center">
+        <div>
+          <h1 className="text-base font-medium">Tatini Menu</h1>
+          <p className="text-xs text-gray-500">Table {table}</p>
+        </div>
+
+        <button
+          onClick={() => {
+            localStorage.removeItem("tatini_table");
+            window.location.reload();
+          }}
+          className="text-xs underline text-gray-600"
+        >
+          Change
+        </button>
       </header>
 
       {/* CATEGORY BAR */}
@@ -176,86 +182,28 @@ function Menu({ table }: { table: number }) {
 
       {/* MENU CONTENT */}
       <div className="space-y-20">
+
         <div ref={startersRef}>
           <Category title="Starters">
-            <Dish
-              id="cc"
-              name="Crispy Corn"
-              description="Golden fried corn tossed with mild spices and herbs."
-              price={280}
-              img="/menu/crispy-corn.jpg"
-              cartItem={getItem("cc")}
-              onAdd={addItem}
-              onQty={updateQty}
-              onNote={updateItemNote}
-            />
-            <Dish
-              id="pt"
-              name="Paneer Tikka"
-              description="Char-grilled cottage cheese marinated in aromatic spices."
-              price={360}
-              img="/menu/paneer-tikka.jpg"
-              cartItem={getItem("pt")}
-              onAdd={addItem}
-              onQty={updateQty}
-              onNote={updateItemNote}
-            />
+            <Dish id="cc" name="Crispy Corn" description="Golden fried corn tossed with mild spices and herbs." price={280} img="/menu/crispy-corn.jpg" cartItem={getItem("cc")} onAdd={addItem} onQty={updateQty} onNote={updateItemNote} />
+            <Dish id="pt" name="Paneer Tikka" description="Char-grilled cottage cheese marinated in aromatic spices." price={360} img="/menu/paneer-tikka.jpg" cartItem={getItem("pt")} onAdd={addItem} onQty={updateQty} onNote={updateItemNote} />
           </Category>
         </div>
 
         <div ref={mainRef}>
           <Category title="Main Course">
-            <Dish
-              id="bpm"
-              name="Butter Paneer Masala"
-              description="Rich tomato gravy finished with butter and cream."
-              price={420}
-              img="/menu/butter-paneer.jpg"
-              cartItem={getItem("bpm")}
-              onAdd={addItem}
-              onQty={updateQty}
-              onNote={updateItemNote}
-            />
-            <Dish
-              id="dm"
-              name="Dal Makhani"
-              description="Slow-cooked black lentils with butter and spices."
-              price={340}
-              img="/menu/dal-makhani.jpg"
-              cartItem={getItem("dm")}
-              onAdd={addItem}
-              onQty={updateQty}
-              onNote={updateItemNote}
-            />
+            <Dish id="bpm" name="Butter Paneer Masala" description="Rich tomato gravy finished with butter and cream." price={420} img="/menu/butter-paneer.jpg" cartItem={getItem("bpm")} onAdd={addItem} onQty={updateQty} onNote={updateItemNote} />
+            <Dish id="dm" name="Dal Makhani" description="Slow-cooked black lentils with butter and spices." price={340} img="/menu/dal-makhani.jpg" cartItem={getItem("dm")} onAdd={addItem} onQty={updateQty} onNote={updateItemNote} />
           </Category>
         </div>
 
         <div ref={drinksRef}>
           <Category title="Drinks">
-            <Dish
-              id="vm"
-              name="Virgin Mojito"
-              description="Refreshing mint and lime cooler."
-              price={220}
-              img="/menu/mojito.jpg"
-              cartItem={getItem("vm")}
-              onAdd={addItem}
-              onQty={updateQty}
-              onNote={updateItemNote}
-            />
-            <Dish
-              id="cf"
-              name="Cold Coffee"
-              description="Chilled coffee blended with milk and ice."
-              price={240}
-              img="/menu/cold-coffee.jpg"
-              cartItem={getItem("cf")}
-              onAdd={addItem}
-              onQty={updateQty}
-              onNote={updateItemNote}
-            />
+            <Dish id="vm" name="Virgin Mojito" description="Refreshing mint and lime cooler." price={220} img="/menu/mojito.jpg" cartItem={getItem("vm")} onAdd={addItem} onQty={updateQty} onNote={updateItemNote} />
+            <Dish id="cf" name="Cold Coffee" description="Chilled coffee blended with milk and ice." price={240} img="/menu/cold-coffee.jpg" cartItem={getItem("cf")} onAdd={addItem} onQty={updateQty} onNote={updateItemNote} />
           </Category>
         </div>
+
       </div>
 
       {/* FLOATING CART BAR */}
@@ -279,6 +227,7 @@ function Menu({ table }: { table: number }) {
       {showCart && (
         <div className="fixed inset-0 bg-black/40 z-[999] flex items-end justify-center">
           <div className="bg-white w-full max-w-md rounded-t-2xl p-5 max-h-[85vh] overflow-y-auto">
+
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-base font-medium">Your Order</h2>
               <button onClick={() => setShowCart(false)}>✕</button>
@@ -459,4 +408,3 @@ function Dish({
     </div>
   );
 }
-
